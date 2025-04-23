@@ -30,8 +30,8 @@ jobs:
       - name: Run ISORT to fix import order
         run: isort .
 
-      - name: Run Pylint with automatic fixes
-        run: pylint --disable=all --enable=E,F,W,C,R --recursive=y --output-format=json | jq 'map({path:.path, message:.message})'
+      - name: Run Pylint to check errors
+        run: pylint --disable=all --enable=E,F,W,C,R --recursive=y --output-format=json
 
       - name: Commit and Push Fixes (if changes detected)
         run: |
@@ -51,7 +51,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Super-Linter with relaxed rules
+      - name: Run Super-Linter with adjusted rules
         uses: super-linter/super-linter@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
