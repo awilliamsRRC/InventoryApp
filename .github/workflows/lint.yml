@@ -1,4 +1,4 @@
-name: Super-Linter
+name: Super-Linter and Auto-Fix
 
 on:
   push:
@@ -16,6 +16,31 @@ permissions:
   statuses: write
 
 jobs:
+  auto_fix:
+    name: Auto-Fix Python Issues
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install pylint isort
+
+      - name: Run ISORT to fix import order
+        run: isort .
+
+      - name: Run Pylint with automatic fixes
+        run: pylint --disable=all --enable=E,F,W,C,R --recursive=y --output-format=json | jq 'map({path:.path, message:.message})'
+
+      - name: Commit and Push Fixes (if changes detected)
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "github-action@users.noreply.github.com"
+          git add .
+          git commit -m "Auto-fix linting issues" || exit 0
+          git push
+
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
@@ -26,11 +51,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Super-Linter with adjusted rules
+      - name: Run Super-Linter with relaxed rules
         uses: super-linter/super-linter@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_PYLINT: false  # Disables Pylint strict rules
+          VALIDATE_PYTHON_PYLINT: false  # Disables strict Pylint rules
           VALIDATE_JSCPD: false  # Ignore duplicate code warnings
           VALIDATE_CHECKOV: false
           FIX_HTML_PRETTIER: true
