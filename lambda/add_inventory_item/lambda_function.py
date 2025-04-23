@@ -2,7 +2,7 @@ import json
 import os
 
 import boto3
-import ulid  # Make sure the ULID module is available in your Lambda package
+import uuid
 
 
 def lambda_handler(event, context):
