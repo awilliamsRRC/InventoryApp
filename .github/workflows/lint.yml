@@ -2,6 +2,9 @@ name: Super-Linter
 
 on:
   pull_request:
+    branches:
+      - main
+      - development  # Add the development branch here
     types: [opened, reopened]  # Trigger linting on PR open or reopen
 
 permissions:
