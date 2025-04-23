@@ -4,14 +4,12 @@ from decimal import Decimal
 
 import boto3
 
-
 # Custom JSON encoder for Decimal
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Decimal):
             return float(o)
         return super(DecimalEncoder, self).default(o)
-
 
 def lambda_handler(event, context):
     # Setup DynamoDB
@@ -31,10 +29,8 @@ def lambda_handler(event, context):
     # Query GSI that allows reverse lookup by location_id
     try:
         response = table.query(
-            IndexName="location_index",  # Replace with your actual GSI name
-            KeyConditionExpression=boto3.dynamodb.conditions.Key("item_location_id").eq(
-                location_id
-            ),
+            IndexName="LocationIndex",  # Use the exact index name
+            KeyConditionExpression=boto3.dynamodb.conditions.Key("item_location_id").eq(location_id)
         )
 
         items = response.get("Items", [])
