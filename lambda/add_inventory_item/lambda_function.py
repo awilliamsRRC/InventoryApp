@@ -4,6 +4,8 @@ import os
 import boto3
 import uuid
 
+from decimal import Decimal  # Import Decimal module
+
 def lambda_handler(event, context):
     # Parse incoming JSON data
     try:
@@ -32,15 +34,15 @@ def lambda_handler(event, context):
             'body': json.dumps("Missing required fields in request.")
         }
 
-    # Insert inventory item into DynamoDB
+    # Convert numeric fields to Decimal
     try:
         table.put_item(
             Item={
                 'item_id': item_id,
                 'item_name': data['item_name'],
                 'item_description': data['item_description'],
-                'item_qty': int(data['item_qty']),
-                'item_price': float(data['item_price']),
+                'item_qty': Decimal(str(data['item_qty'])),
+                'item_price': Decimal(str(data['item_price'])),
                 'item_location_id': int(data['item_location_id'])
             }
         )
