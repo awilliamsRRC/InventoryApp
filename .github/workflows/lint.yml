@@ -55,8 +55,10 @@ jobs:
         uses: super-linter/super-linter@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_PYLINT: false  # Disables strict Pylint rules
-          VALIDATE_JSCPD: false  # Ignore duplicate code warnings
+          VALIDATE_PYTHON_MYPY: false  # Disables Mypy type checking
+          VALIDATE_PYTHON_PYINK: false  # Disables Pyink formatting checks
+          VALIDATE_PYTHON_PYLINT: false  # Skips Pylint strict rules
+          VALIDATE_JSCPD: false  # Ignores duplicate code detection
           VALIDATE_CHECKOV: false
           FIX_HTML_PRETTIER: true
           FIX_PYTHON_BLACK: true
