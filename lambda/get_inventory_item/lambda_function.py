@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import boto3
 
-# Helper to convert Decimal to float for JSON serialization
+# Helper to convert Decimal to float for JSON serialization.
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Decimal):
