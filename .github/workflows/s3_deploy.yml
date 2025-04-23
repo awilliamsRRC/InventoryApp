@@ -25,4 +25,4 @@ jobs:
 
       - name: Upload index.html to S3
         run: |
-          aws s3 cp "index.html" "s3://s3-final-upload-akeem-williams-2025-04-23/index.html" --acl public-read --content-type "text/html"
+          aws s3 cp "index.html" "s3://s3-final-upload-akeem-williams-2025-04-23/index.html" --content-type "text/html"
