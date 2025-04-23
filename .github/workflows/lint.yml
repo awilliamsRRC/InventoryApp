@@ -3,17 +3,17 @@ name: Super-Linter and Deploy
 on:
   push:
     branches:
-      - development  # Trigger on pushes to the development branch
-      - main          # Optional: Trigger on pushes to the main branch as well
+      - development
+      - main
   pull_request:
     branches:
-      - development  # Trigger on pull requests to the development branch
-    types: [opened, reopened, synchronize]  # Trigger when PR is opened, reopened, or synchronized with new commits
+      - development
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: read
   packages: read
-  statuses: write  # To report GitHub Actions status checks
+  statuses: write
 
 jobs:
   lint:
@@ -24,33 +24,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensure full git history for accurate comparison
+          fetch-depth: 0
 
       - name: Run Super-Linter
         uses: super-linter/super-linter@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JSCPD: false
           VALIDATE_CHECKOV: false
           FIX_HTML_PRETTIER: true
           FIX_PYTHON_BLACK: true
           FIX_YAML_PRETTIER: true
 
+  js_cpd_check:
+    name: Check for Duplicate Code (JSCPD)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run JSCPD with custom ignore settings
+        run: npx jscpd --config .jscpd.json --ignore "**/.github/workflows/**"
+
   deploy_lambda:
     name: Deploy Lambda Functions
     runs-on: ubuntu-latest
-    needs: lint  # This ensures the lint job runs first
-    if: github.ref == 'refs/heads/development'  # Only deploy on push to development branch
+    needs: lint
+    if: github.ref == 'refs/heads/development'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2  # ✅ Updated to the latest version
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Replace with your region
+          aws-region: us-east-1
 
       - name: Deploy Lambda Functions
         run: |
@@ -66,19 +77,19 @@ jobs:
   deploy_s3:
     name: Deploy index.html to S3
     runs-on: ubuntu-latest
-    needs: lint  # Ensure lint job runs first
-    if: github.ref == 'refs/heads/development' && contains(github.event.head_commit.message, 'index.html')  # Only deploy if index.html is updated
+    needs: lint
+    if: github.ref == 'refs/heads/development' && contains(github.event.head_commit.message, 'index.html')
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2  # ✅ Updated to the latest version
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Replace with your region
+          aws-region: us-east-1
 
       - name: Sync index.html to S3
         run: |
