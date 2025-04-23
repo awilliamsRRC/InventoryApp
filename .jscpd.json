@@ -1,0 +1,14 @@
+{
+  "threshold": 15,
+  "minLines": 10,
+  "minTokens": 100,
+  "reporters": ["console", "json"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/*.json"
+  ]
+}
