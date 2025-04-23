@@ -29,8 +29,8 @@ def lambda_handler(event, context):
     # Query GSI that allows reverse lookup by location_id
     try:
         response = table.query(
-            IndexName="LocationIndex",  # Use the exact index name
-            KeyConditionExpression=boto3.dynamodb.conditions.Key("item_location_id").eq(location_id)
+            IndexName="LocationIndex",  # Ensure you're using the exact index name
+            KeyConditionExpression=boto3.dynamodb.conditions.Key("location_id").eq(location_id)  # Querying based on location_id
         )
 
         items = response.get("Items", [])
